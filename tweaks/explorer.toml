@@ -1,5 +1,31 @@
 [meta]
 label =　"エクスプローラー"
 description = "ファイル表示・右クリックメニュー・フォルダ動作をカスタマイズします"
-icon = ""
+icon = "folder"
 order = 1
+
+[[tweaks]]
+id             = "show_hidden_files"
+schema_version = 1
+label          = "隠しファイルを表示"
+description    = "隠し属性ファイルを表示します。 ※通常はエクスプローラーの再起動で反映されます。されない場合は再起動してください。"
+tags           = ["file", "display", "show", "hidden"]
+risk           = "low"
+requires_reboot = false
+requires_admin  = false
+operations     = [
+  { hive = "HKCU", path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", name = "Hidden", value_type = "DWORD", value_enabled = 1, value_disabled = 2 },
+]
+
+[[tweaks]]
+id             = "show_file_extensions"
+schema_version = 1
+label          = "拡張子を表示"
+description    = "ファイルの拡張子を表示します。 ※通常はエクスプローラーの再起動で反映されます。されない場合は再起動してください。"
+tags           = ["file", "display", "hide", "extension"]
+risk           = "low"
+requires_reboot = false
+requires_admin  = false
+operations     = [
+  { hive = "HKCU", path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", name = "HideFileExt", value_type = "DWORD", value_enabled = 0, value_disabled = 1 },
+]

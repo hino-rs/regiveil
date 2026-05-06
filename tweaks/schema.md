@@ -2,7 +2,7 @@
 
 > **Version:** 1.0.0
 > **Format:** TOML
-> **File pattern:** `tweaks/{builtin,user}/<category>.toml`
+> **Support OS** Windows 11 Home || Pro
 
 ## 概要
 
@@ -47,9 +47,9 @@
 
 ```toml
 [meta]
-label       = "プライバシー"
-description = "テレメトリ・広告・データ収集に関する設定"
-icon        = "shield"
+label       = "エクスプローラー"
+description = "ファイル表示・右クリックメニュー・フォルダ動作をカスタマイズします"
+icon        = "folder"
 order       = 1
 ```
 
@@ -77,12 +77,11 @@ order       = 1
 |`id`|`string`|✅|項目の一意識別子（不変・命名規則は後述）|
 |`schema_version`|`integer`|✅|スキーマバージョン（現在は`1`を指定）|
 |`label`|`string`|✅|UIに表示する設定名|
-|`description`|`string`|✅|設定の詳細説明|
+|`description`|`string`|✅|設定の詳細説明 **エディションで差異がある場合はここに明示**|
 |`tags`|`arrayofstring`|✅|検索用タグ（後述の推奨タグを参照）|
 |`risk`|`string`|✅|リスクレベル（`"low"`/`"medium"`/`"high"`）|
 |`requires_reboot`|`boolean`|✅|適用後に再起動が必要か|
 |`requires_admin`|`boolean`|✅|管理者権限（HKLM書き込み等）が必要か|
-|`supported_os`|`arrayofstring`|✅|対応OSバージョン（後述の定数一覧を参照）|
 |`docs_url`|`string`|❌|参考ドキュメントのURL|
 |`operations`|`arrayofOperation`|✅|実際に操作するRegistryキーの定義（後述）|
 
@@ -107,15 +106,6 @@ order       = 1
 |`"medium"`|一部機能に影響する可能性があるが、復元容易|
 |`"high"`|システム動作に大きく影響する。上級者向け|
 
-### `supported_os` 定数一覧
-
-|値|対象OS|
-|---|---|
-|`"10"`|Windows10|
-|`"11"`|Windows11|
-
-複数指定例：`supported_os = ["10", "11"]`
-
 ### `[[tweaks]]`セクション例
 
 ```toml
@@ -128,7 +118,6 @@ tags           = ["privacy", "network", "microsoft", "telemetry"]
 risk           = "low"
 requires_reboot = false
 requires_admin  = false
-supported_os   = ["10", "11"]
 docs_url       = "https://learn.microsoft.com/en-us/windows/privacy/"
 operations     = [
   { hive = "HKCU", path = "Software\\Microsoft\\Windows\\CurrentVersion\\Privacy", name = "TailoredExperiencesWithDiagnosticDataEnabled", value_type = "DWORD", value_enabled = 0, value_disabled = 1 },
@@ -166,48 +155,6 @@ operations     = [
 |`"QWORD"`|`REG_QWORD`（64bit整数）|`integer`|
 |`"SZ"`|`REG_SZ`（文字列）|`string`|
 
-## ファイル完成例
-
-```toml
-# tweaks/builtin/privacy.toml
-
-[meta]
-label       = "プライバシー"
-description = "テレメトリ・広告・データ収集に関する設定"
-icon        = "shield"
-order       = 1
-
-[[tweaks]]
-id             = "disable_telemetry"
-schema_version = 1
-label          = "テレメトリを無効化"
-description    = "Microsoftへの診断データ・使用状況の送信を停止します。"
-tags           = ["privacy", "network", "telemetry"]
-risk           = "low"
-requires_reboot = false
-requires_admin  = false
-supported_os   = ["10", "11"]
-docs_url       = "https://learn.microsoft.com/en-us/windows/privacy/"
-operations     = [
-  { hive = "HKCU", path = "Software\\Microsoft\\Windows\\CurrentVersion\\Privacy", name = "TailoredExperiencesWithDiagnosticDataEnabled", value_type = "DWORD", value_enabled = 0, value_disabled = 1 },
-  { hive = "HKCU", path = "Software\\Microsoft\\InputPersonalization",             name = "RestrictImplicitInkCollection",                value_type = "DWORD", value_enabled = 1, value_disabled = 0 },
-]
-
-[[tweaks]]
-id             = "disable_advertising_id"
-schema_version = 1
-label          = "広告IDを無効化"
-description    = "アプリ横断でのターゲティング広告に使用される広告IDを無効にします。"
-tags           = ["privacy", "advertising"]
-risk           = "low"
-requires_reboot = false
-requires_admin  = false
-supported_os   = ["10", "11"]
-operations     = [
-  { hive = "HKCU", path = "Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", name = "Enabled", value_type = "DWORD", value_enabled = 0, value_disabled = 1 },
-]
-```
-
 ## バリデーションルール
 
 アプリ起動時に以下を検証します。違反があれば起動を中止してエラーを表示します。
@@ -217,6 +164,32 @@ operations     = [
 3. **`value_type` と値の型整合性** — `DWORD`/`QWORD` のとき `value_enabled` / `value_disabled` が整数であること
 4. **`schema_version`** — アプリがサポートするバージョン以外は警告・スキップ
 5. **未知フィールドの禁止** — typo検出のため、定義外フィールドはエラー
+
+## コピー用
+
+```toml
+[meta]
+label =　      ""
+description = ""
+icon =        ""
+order =       1
+```
+
+```toml
+[[tweaks]]
+id              = ""
+schema_version  = 1
+label           = ""
+description     = ""
+tags            = ["", ""]
+risk            = ""
+requires_reboot = false
+requires_admin  = false
+docs_url        = ""
+operations      = [
+  { hive = "", path = "", name = "", value_type = "", value_enabled = 0, value_disabled = 1 },
+]
+```
 
 ## 変更履歴
 

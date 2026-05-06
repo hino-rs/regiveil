@@ -5,7 +5,7 @@ mod old_registry;
 mod system;
 mod ui;
 mod registry;
-
+mod tweak;
 
 use app::{App, setup_custom_fonts};
 use eframe::egui;
