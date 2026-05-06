@@ -1,8 +1,11 @@
 // #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod app;
-mod registry;
+mod old_registry;
 mod system;
+mod ui;
+mod registry;
+
 
 use app::{App, setup_custom_fonts};
 use eframe::egui;

@@ -1,43 +1,53 @@
 use eframe::egui;
-use crate::registry::{RegistryTweak, Windows11Tweaks, apply_tweaks};
+use crate::{old_registry::{RegistryTweak, Windows11Tweaks, apply_tweaks}, ui::{diff_view::DiffView, search::SearchBar}};
+use crate::ui::category::*;
 
 pub struct App {
-    show_hidden_files: bool,
-    show_file_extensions: bool,
+    search_bar: SearchBar,
+    tabs: CategoryTabs,
+    diff_view: DiffView,
 }
 
 impl Default for App {
     fn default() -> Self {
         Self {
-            show_hidden_files: false,
-            show_file_extensions: false,
+            search_bar: SearchBar { query: String::new() },
+            tabs: CategoryTabs { selected: Category::Explorer },
+            diff_view: DiffView {},
         }
     }
 }
-
 impl eframe::App for App {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
-        let mut tweaks = Vec::<RegistryTweak>::new();
+        
+        ui.vertical(|ui| {
+            ui.heading("Diff Viewer");
+            
+            ui.horizontal(|ui| {
+                ui.label("🔍 検索:");
+                self.search_bar.ui(ui); 
+            });
+        });
 
-        ui.heading("Regiveil");
-        ui.separator(); 
+        ui.separator();
 
-        ui.label("隠しファイルを表示: ");
-        ui.checkbox(&mut self.show_hidden_files, "表示");
+        ui.horizontal(|ui| {
+            ui.vertical(|ui| {
+                ui.set_min_width(100.0);
+                ui.heading("カテゴリ");
+                self.tabs.ui(ui);
+            });
 
-        ui.label("ファイル拡張子の表示");
-        ui.checkbox(&mut self.show_file_extensions, "表示");
+            ui.separator();
 
-        if ui.button("全て適用する").clicked() {
-            if self.show_hidden_files {
-                tweaks.push(Windows11Tweaks::show_hidden_files());
-            }
-            if self.show_file_extensions {
-                tweaks.push(Windows11Tweaks::show_file_extensions());
-            }
-
-            apply_tweaks(tweaks);
-        }
+            ui.vertical(|ui| {
+                self.diff_view.ui(
+                    ui, 
+                    &self.search_bar.query, 
+                    self.tabs.selected.clone()
+                );
+            });
+        });
     }
 }
 
