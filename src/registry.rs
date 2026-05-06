@@ -1,8 +1,8 @@
-use std::io;
-use winreg::HKEY;
-use winreg::RegKey;
-use winreg::enums::*;
 use crate::system::{notify_explorer, notify_system};
+use std::io;
+use winreg::enums::*;
+use winreg::RegKey;
+use winreg::HKEY;
 
 pub enum RegData {
     Dword(u32),
@@ -53,7 +53,7 @@ impl Windows11Tweaks {
 
 // apply関数もここに持たせると、UI側がスッキリします
 pub fn apply_tweaks(tweaks: Vec<RegistryTweak>) {
-    println!("適用させます。");
+    println!("適用させます...");
     let mut applied_count = 0;
     for (i, tweak) in tweaks.iter().enumerate() {
         match tweak.apply() {
