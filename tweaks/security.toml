@@ -1,1 +1,5 @@
-# UAC・BitLocker・認証
+[meta]
+label =　"セキュリティ"
+description = "UAC・認証・暗号化など、システムの安全性に関わる設定を構成します"
+icon = ""
+order = 1
