@@ -3,3 +3,17 @@ label = "ネットワーク"
 description = "DNS・ファイアウォール・ネットワーク共有など、通信に関する設定を管理します"
 icon = ""
 order = 1
+
+[[tweaks]]
+id              = "b"
+schema_version  = 1
+label           = ""
+description     = ""
+tags            = ["", ""]
+ risk            = "low"
+requires_reboot = false
+requires_admin  = false
+docs_url        = ""
+operations     = [
+  { hive = "HKCU", path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", name = "HideFileExt", value_type = "DWORD", value_enabled = 0, value_disabled = 1 },
+]

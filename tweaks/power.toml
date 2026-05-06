@@ -3,3 +3,17 @@ label = "電源・省エネ"
 description = "スリープ・休止状態・電源プランなど、消費電力と電源動作を制御します"
 icon = ""
 order = 1
+
+[[tweaks]]
+id              = "d"
+schema_version  = 1
+label           = ""
+description     = ""
+tags            = ["", ""]
+ risk            = "low"
+requires_reboot = false
+requires_admin  = false
+docs_url        = ""
+operations     = [
+  { hive = "HKCU", path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", name = "HideFileExt", value_type = "DWORD", value_enabled = 0, value_disabled = 1 },
+]

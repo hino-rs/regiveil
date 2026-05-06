@@ -3,12 +3,12 @@
 mod app;
 mod old_registry;
 mod system;
-mod ui;
 mod registry;
 mod tweak;
 
 use app::{App, setup_custom_fonts};
 use eframe::egui;
+use crate::tweak::loader::load;
 
 fn main() -> eframe::Result<()> {
     let options = eframe::NativeOptions {

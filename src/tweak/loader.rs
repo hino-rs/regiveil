@@ -1,6 +1,4 @@
-use crate::tweak::schema::{
-    CategoryMeta, Hive, Operation, RegValue, Risk, Tweak, TweakFile, ValueType,
-};
+use crate::tweak::schema::TweakFile;
 
 #[derive(Debug)]
 pub enum LoadError {
@@ -9,6 +7,12 @@ pub enum LoadError {
 }
 
 pub fn load() -> Result<Vec<TweakFile>, LoadError> {
+    // let exe_dir = std::env::current_exe()
+    //     .ok()
+    //     .and_then(|p| p.parent().map(|p| p.to_path_buf()))
+    //     .unwrap_or_else(|| std::path::PathBuf::from("."));
+    
+    // let tweaks_dir = match std::fs::read_dir(exe_dir.join("tweaks")) {
     let tweaks_dir = match std::fs::read_dir("tweaks") {
         Ok(dir) => dir,
         Err(e) => {
@@ -51,7 +55,6 @@ pub fn load() -> Result<Vec<TweakFile>, LoadError> {
             }
         }
     }
-
     
     let mut seen_ids = std::collections::HashSet::new();
     for tweak_file in &tweaks_files {
@@ -63,7 +66,6 @@ pub fn load() -> Result<Vec<TweakFile>, LoadError> {
         }
     }
 
-    
     if !tweaks_files.is_empty() {
         return Ok(tweaks_files);
     }
