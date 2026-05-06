@@ -1,5 +1,5 @@
 [meta]
-label =　"エクスプローラー"
+label = "エクスプローラー"
 description = "ファイル表示・右クリックメニュー・フォルダ動作をカスタマイズします"
 icon = "folder"
 order = 1

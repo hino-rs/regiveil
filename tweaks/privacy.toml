@@ -1,5 +1,5 @@
 [meta]
-label =　"プライバシー"
+label = "プライバシー"
 description = "テレメトリ・広告ID・データ収集など、Microsoftへの情報送信を制御します"
 icon = ""
 order = 1

@@ -169,7 +169,7 @@ operations     = [
 
 ```toml
 [meta]
-label =　      ""
+label =       ""
 description = ""
 icon =        ""
 order =       1
