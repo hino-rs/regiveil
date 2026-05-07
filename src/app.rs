@@ -1,12 +1,11 @@
-use crate::{
-    old_registry::{RegistryTweak, Windows11Tweaks, apply_tweaks},
-    tweak::{loader::load, schema::TweakFile},
-};
+use crate::tweak::{loader::load, schema::TweakFile};
+
 use eframe::egui;
 
 struct SearchBar {
     query: String,
 }
+
 struct DiffView;
 
 pub struct App {
@@ -31,9 +30,16 @@ impl Default for App {
             },
             selected_tab: 0,
             diff_view: DiffView {},
-            os_info: { 
+            os_info: {
                 let info = os_info::get();
-                (info.os_type().to_string(), if let Some(edition) = info.edition() { edition.to_string() } else { String::from("不明") })
+                (
+                    info.os_type().to_string(),
+                    if let Some(edition) = info.edition() {
+                        edition.to_string()
+                    } else {
+                        String::from("不明")
+                    },
+                )
             },
         }
     }
@@ -41,11 +47,14 @@ impl Default for App {
 
 impl eframe::App for App {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        // ---------------------------------------------------------------------------------
+        // ヘッダー
+        // ---------------------------------------------------------------------------------
         ui.horizontal(|ui| {
             ui.heading("Regiveil");
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 let edition = &self.os_info.1;
-        
+
                 if edition.contains("Professional") || edition.contains("Personal") {
                     ui.label(egui::RichText::new("サポート: ✅").color(egui::Color32::GREEN));
                 } else {
@@ -58,15 +67,21 @@ impl eframe::App for App {
 
         ui.separator();
 
+        // ---------------------------------------------------------------------------------
+        // タブ
+        // ---------------------------------------------------------------------------------
         ui.horizontal(|ui| {
             for (i, tf) in self.tweak_files.iter().enumerate() {
                 ui.selectable_value(&mut self.selected_tab, i, &tf.meta.label);
             }
             ui.selectable_value(&mut self.selected_tab, self.tweak_files.len(), "検索");
         });
-        
+
         ui.separator();
 
+        // ---------------------------------------------------------------------------------
+        // 設定項目
+        // ---------------------------------------------------------------------------------
         let available_size = ui.available_size();
         let left_width = available_size.x * 0.7;
 
@@ -80,6 +95,23 @@ impl eframe::App for App {
                     if let Some(active_category) = self.tweak_files.get(self.selected_tab) {
                         ui.heading(&active_category.meta.label);
                         ui.label(&active_category.meta.description);
+
+                        let mut id = 0;
+                        for tweak in &active_category.tweaks {
+                            ui.label(&tweak.label);
+                            ui.label(&tweak.description);
+                            ui.label(format!("リスク: {:?}", tweak.risk));
+
+                            egui::CollapsingHeader::new("詳細")
+                                .id_salt(id)
+                                .show(ui, |ui| {
+                                    ui.label(format!("Tags: {:?}", tweak.tags));
+                                    for op in &tweak.operations {
+                                        ui.label(format!("{:#?}", op));
+                                    }
+                                });
+                            id += 1;
+                        }
                     } else if self.selected_tab == self.tweak_files.len() {
                         ui.heading("検索");
                         ui.label("タグで検索できます");
@@ -88,13 +120,20 @@ impl eframe::App for App {
             );
 
             ui.separator();
-    
+
+            // ---------------------------------------------------------------------------------
+            // 差分
+            // ---------------------------------------------------------------------------------
             ui.allocate_ui_with_layout(
-                egui::vec2(ui.available_width(), available_size.y), 
+                egui::vec2(ui.available_width(), available_size.y),
                 egui::Layout::top_down(egui::Align::LEFT),
                 |ui| {
                     ui.set_min_height(available_size.y);
                     ui.heading("差分");
+
+                    if ui.button("適用").clicked() {
+                        println!("適用");
+                    }
                 },
             );
         });
