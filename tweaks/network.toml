@@ -2,7 +2,6 @@
 label = "ネットワーク"
 description = "DNS・ファイアウォール・ネットワーク共有など、通信に関する設定を管理します"
 icon = ""
-order = 1
 
 [[tweaks]]
 id              = "b"

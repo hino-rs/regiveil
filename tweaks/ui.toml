@@ -2,7 +2,6 @@
 label = "外観・アニメーション"
 description = "タスクバー・アニメーション・フォントなど、UIの見た目と動作を調整します"
 icon = ""
-order = 1
 
 [[tweaks]]
 id              = "g"

@@ -41,7 +41,6 @@
 |`label`|`string`|✅|UIに表示するカテゴリ名|
 |`description`|`string`|✅|カテゴリの概要説明|
 |`icon`|`string`|✅|UIアイコン識別子（後述の定数一覧を参照）|
-|`order`|`integer`|✅|サイドバーでの表示順（昇順、1から開始）|
 
 ### `[meta]`セクション例
 
@@ -50,7 +49,6 @@
 label       = "エクスプローラー"
 description = "ファイル表示・右クリックメニュー・フォルダ動作をカスタマイズします"
 icon        = "folder"
-order       = 1
 ```
 
 ### `icon` 定数一覧
@@ -172,7 +170,6 @@ operations     = [
 label =       ""
 description = ""
 icon =        ""
-order =       1
 ```
 
 ```toml

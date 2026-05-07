@@ -2,7 +2,6 @@
 label = "エクスプローラー"
 description = "ファイル表示・右クリックメニュー・フォルダ動作をカスタマイズします"
 icon = "folder"
-order = 1
 
 [[tweaks]]
 id             = "show_hidden_files"

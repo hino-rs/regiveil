@@ -2,7 +2,6 @@
 label = "入力デバイス"
 description = "キーボード・マウス・タッチパッドの感度や動作を調整します"
 icon = ""
-order = 1
 
 [[tweaks]]
 id              = "a"

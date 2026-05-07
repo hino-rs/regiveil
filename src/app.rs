@@ -1,6 +1,9 @@
 use crate::{registry::backend::now, tweak::{loader::load, schema::TweakFile}};
 
 use eframe::egui;
+use crate::registry::backend::is_default;
+use crate::tweak::schema::Tweak;
+use chrono::Local;
 
 struct SearchBar {
     query: String,
@@ -62,6 +65,7 @@ impl eframe::App for App {
                 }
 
                 ui.label(format!("Edition: {}", edition));
+                ui.label(format!("{}", Local::now().format("%H時:%M分")));
             })
         });
 
@@ -103,7 +107,12 @@ impl eframe::App for App {
                             ui.label(format!("リスク: {:?}", tweak.risk));
 
                             if let Some(op) = tweak.operations.get(0) {
-                                ui.label(format!("{:?}", now(&op.path, &op.name)));
+                                match now(&op.path, &op.name) {
+                                    Ok(v) => {
+                                        ui.checkbox(&mut is_default(v, &op), "有効");
+                                    },
+                                    Err(e) => { ui.label(format!("エラー: {e:?}")); }
+                                }
                             }
 
                             egui::CollapsingHeader::new("詳細")

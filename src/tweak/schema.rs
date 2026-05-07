@@ -13,7 +13,6 @@ pub struct CategoryMeta {
     pub label: String,
     pub description: String,
     pub icon: String,
-    pub order: u8,
 }
 
 #[derive(Debug, Deserialize)]
@@ -59,7 +58,7 @@ pub enum ValueType {
     Sz,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq)]
 #[serde(untagged)]
 pub enum RegValue {
     Integer(i64),

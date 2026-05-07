@@ -1,12 +1,17 @@
+use std::cmp::PartialEq;
 use winreg::enums::*;
 use winreg::RegKey;
 
-use crate::tweak::schema::RegValue;
+use crate::tweak::schema::{Operation, RegValue, Tweak};
 
 #[derive(Debug)]
 pub enum RegValueError {
     UnsupportedType,
     FailedOpen,
+}
+
+pub fn is_default(now_value: RegValue, op: &Operation) -> bool {
+    now_value == op.value_enabled
 }
 
 pub fn now(path: &str, name: &str) -> Result<RegValue, RegValueError> {
