@@ -1,4 +1,4 @@
-use crate::tweak::{loader::load, schema::TweakFile};
+use crate::{registry::backend::now, tweak::{loader::load, schema::TweakFile}};
 
 use eframe::egui;
 
@@ -101,6 +101,10 @@ impl eframe::App for App {
                             ui.label(&tweak.label);
                             ui.label(&tweak.description);
                             ui.label(format!("リスク: {:?}", tweak.risk));
+
+                            if let Some(op) = tweak.operations.get(0) {
+                                ui.label(format!("{:?}", now(&op.path, &op.name)));
+                            }
 
                             egui::CollapsingHeader::new("詳細")
                                 .id_salt(id)
