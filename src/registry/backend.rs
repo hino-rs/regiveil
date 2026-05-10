@@ -22,12 +22,12 @@ pub fn is_default(now_value: RegValue, op: &Operation) -> bool {
     now_value == op.value_enabled
 }
 
-pub fn now(path: &str, name: &str) -> Result<RegValue, RegveilError> {
-    let hkcu = RegKey::predef(HKEY_CURRENT_USER);
+pub fn now(op: &Operation) -> Result<RegValue, RegveilError> {
+    let hive_key = RegKey::predef(op.hive.to_hkey());
 
-    let key = hkcu.open_subkey(std::path::Path::new(path)).unwrap();
+    let key = hive_key.open_subkey(std::path::Path::new(&op.path)).unwrap();
 
-    let res = key.get_raw_value(name);
+    let res = key.get_raw_value(&op.name);
 
     let Ok(value) = res else {
         return Err(RegveilError::FailedOpen);

@@ -107,7 +107,7 @@ impl eframe::App for App {
                             ui.label(format!("リスク: {:?}", tweak.risk));
 
                             if let Some(op) = tweak.operations.get(0) {
-                                match now(&op.path, &op.name) {
+                                match now(&op) {
                                     Ok(v) => {
                                         ui.checkbox(&mut is_default(v, &op), "有効");
                                     },
