@@ -1,20 +1,28 @@
 use std::cmp::PartialEq;
-use winreg::enums::*;
 use winreg::RegKey;
+use winreg::enums::*;
 
+use crate::tweak::schema::ValueType;
 use crate::tweak::schema::{Operation, RegValue, Tweak};
 
 #[derive(Debug)]
-pub enum RegValueError {
+pub enum RegveilError {
     UnsupportedType,
     FailedOpen,
+    Io(std::io::Error),
+}
+
+impl From<std::io::Error> for RegveilError {
+    fn from(e: std::io::Error) -> Self {
+        RegveilError::Io(e)
+    }
 }
 
 pub fn is_default(now_value: RegValue, op: &Operation) -> bool {
     now_value == op.value_enabled
 }
 
-pub fn now(path: &str, name: &str) -> Result<RegValue, RegValueError> {
+pub fn now(path: &str, name: &str) -> Result<RegValue, RegveilError> {
     let hkcu = RegKey::predef(HKEY_CURRENT_USER);
 
     let key = hkcu.open_subkey(std::path::Path::new(path)).unwrap();
@@ -22,7 +30,7 @@ pub fn now(path: &str, name: &str) -> Result<RegValue, RegValueError> {
     let res = key.get_raw_value(name);
 
     let Ok(value) = res else {
-        return Err(RegValueError::FailedOpen);
+        return Err(RegveilError::FailedOpen);
     };
 
     let bytes: &[u8] = &value.bytes;
@@ -33,7 +41,7 @@ pub fn now(path: &str, name: &str) -> Result<RegValue, RegValueError> {
             buf.copy_from_slice(bytes);
             Ok(RegValue::Integer(i32::from_ne_bytes(buf) as i64))
         }
-        
+
         RegType::REG_QWORD if bytes.len() == 8 => {
             let mut buf = [0u8; 8];
             buf.copy_from_slice(bytes);
@@ -46,12 +54,31 @@ pub fn now(path: &str, name: &str) -> Result<RegValue, RegValueError> {
                 .collect();
 
             let clean_chars = match u16_chars.last() {
-                Some(&0) => &u16_chars[..u16_chars.len() -1],
+                Some(&0) => &u16_chars[..u16_chars.len() - 1],
                 _ => &u16_chars[..],
             };
 
             Ok(RegValue::Sz(String::from_utf16_lossy(clean_chars)))
         }
-        _ => { Err(RegValueError::UnsupportedType) }
+        _ => Err(RegveilError::UnsupportedType),
     }
+}
+
+pub fn write(op: &Operation, value: &RegValue) -> Result<(), RegveilError> {
+    let hive_key = RegKey::predef(op.hive.to_hkey());
+    let (key, _) = hive_key.create_subkey(&op.path)?;
+
+    match (value, &op.value_type) {
+        (RegValue::Integer(n), ValueType::Dword) => {
+            key.set_value(&op.name, &(*n as u32))?;
+        }
+        (RegValue::Integer(n), ValueType::Qword) => {
+            key.set_value(&op.name, &(*n as u64))?;
+        }
+        (RegValue::Sz(s), ValueType::Sz) => {
+            key.set_value(&op.name, s)?;
+        }
+        _ => return Err(RegveilError::UnsupportedType),
+    }
+    Ok(())
 }

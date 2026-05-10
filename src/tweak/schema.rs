@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use winreg::{HKEY, enums::{HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, HKEY_USERS}};
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -48,6 +49,17 @@ pub enum Hive {
     Hklm,
     Hkcr,
     Hku,
+}
+
+impl Hive {
+    pub fn to_hkey(&self) -> HKEY {
+        match self {
+            Self::Hkcu => HKEY_CURRENT_USER,
+            Self::Hklm => HKEY_LOCAL_MACHINE,
+            Self::Hkcr => HKEY_CLASSES_ROOT,
+            Self::Hku  => HKEY_USERS,
+        }
+    }
 }
 
 #[derive(Debug, Deserialize)]
