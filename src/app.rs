@@ -6,6 +6,7 @@ use eframe::egui;
 use crate::registry::backend::is_default;
 use crate::tweak::schema::Tweak;
 use chrono::Local;
+use crate::registry::backend::write;
 
 struct SearchBar {
     query: String,
@@ -13,6 +14,7 @@ struct SearchBar {
 
 struct DiffView;
 
+#[derive(Debug)]
 pub struct PendingChange {
     pub tweak_id: String,
     pub operation: Operation,
@@ -119,8 +121,20 @@ impl eframe::App for App {
 
                             if let Some(now) = self.tweak_map.get_mut(&tweak.id) {
                                 if ui.checkbox(now, "有効").clicked() {
-                                    println!("チェックボックスをクリックしました");
-                                }
+                                    let op = tweak.operations.first().unwrap();
+                                    self.diff.push(PendingChange {
+                                        tweak_id: tweak.id.clone(),
+                                        operation: op.clone(), 
+                                        new_value: {
+                                                if *now {
+                                                    op.value_disabled.clone()
+                                                } else {
+                                                    op.value_enabled.clone()
+                                                }
+                                            },
+                                        });
+                                    } 
+                                
                             }
 
                             egui::CollapsingHeader::new("詳細")
@@ -151,6 +165,8 @@ impl eframe::App for App {
                 |ui| {
                     ui.set_min_height(available_size.y);
                     ui.heading("差分");
+
+                    ui.label(format!("{:?}", self.diff));
 
                     if ui.button("適用").clicked() {
                         println!("適用");

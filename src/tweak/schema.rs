@@ -31,7 +31,7 @@ pub struct Tweak {
     pub operations: Vec<Operation>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Operation {
     pub hive: Hive,
@@ -42,7 +42,7 @@ pub struct Operation {
     pub value_disabled: RegValue,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Hive {
     Hkcu,
@@ -62,7 +62,7 @@ impl Hive {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ValueType {
     Dword,
@@ -70,7 +70,7 @@ pub enum ValueType {
     Sz,
 }
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq, Clone)]
 #[serde(untagged)]
 pub enum RegValue {
     Integer(i64),
