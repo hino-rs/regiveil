@@ -1,4 +1,6 @@
-use crate::{registry::backend::now, tweak::{loader::load, schema::TweakFile}};
+use std::collections::BTreeMap;
+
+use crate::{registry::backend::{now, setup}, tweak::{loader::load, schema::{Operation, RegValue, TweakFile}}};
 
 use eframe::egui;
 use crate::registry::backend::is_default;
@@ -11,26 +13,34 @@ struct SearchBar {
 
 struct DiffView;
 
+pub struct PendingChange {
+    pub tweak_id: String,
+    pub operation: Operation,
+    pub new_value: RegValue,
+}
+
 pub struct App {
     search_bar: SearchBar,
     pub tweak_files: Vec<TweakFile>,
     pub selected_tab: usize,
     diff_view: DiffView,
     os_info: (String, String),
+    tweak_map: BTreeMap<String, bool>,
+    diff: Vec<PendingChange>,
 }
 
 impl Default for App {
     fn default() -> Self {
+        let tf = match load() {
+            Ok(tf) => tf,
+            Err(e) => { eprintln!("Tweakファイル読み込みエラー: {e:?}"); Vec::new() }
+        };
         Self {
             search_bar: SearchBar {
                 query: String::new(),
             },
-            tweak_files: if let Ok(tf) = load() {
-                tf
-            } else {
-                eprintln!("tweakファイルリストが空です。");
-                Vec::new()
-            },
+            tweak_map: setup(&tf),
+            tweak_files: tf,
             selected_tab: 0,
             diff_view: DiffView {},
             os_info: {
@@ -44,6 +54,7 @@ impl Default for App {
                     },
                 )
             },
+            diff: Vec::new(),
         }
     }
 }
@@ -106,12 +117,9 @@ impl eframe::App for App {
                             ui.label(&tweak.description);
                             ui.label(format!("リスク: {:?}", tweak.risk));
 
-                            if let Some(op) = tweak.operations.get(0) {
-                                match now(&op) {
-                                    Ok(v) => {
-                                        ui.checkbox(&mut is_default(v, &op), "有効");
-                                    },
-                                    Err(e) => { ui.label(format!("エラー: {e:?}")); }
+                            if let Some(now) = self.tweak_map.get_mut(&tweak.id) {
+                                if ui.checkbox(now, "有効").clicked() {
+                                    println!("チェックボックスをクリックしました");
                                 }
                             }
 

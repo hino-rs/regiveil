@@ -1,7 +1,9 @@
 use std::cmp::PartialEq;
+use std::collections::BTreeMap;
 use winreg::RegKey;
 use winreg::enums::*;
 
+use crate::tweak::schema::TweakFile;
 use crate::tweak::schema::ValueType;
 use crate::tweak::schema::{Operation, RegValue, Tweak};
 
@@ -62,6 +64,21 @@ pub fn now(op: &Operation) -> Result<RegValue, RegveilError> {
         }
         _ => Err(RegveilError::UnsupportedType),
     }
+}
+
+pub fn setup(tweak_files: &[TweakFile]) -> BTreeMap<String, bool> {
+    tweak_files
+        .iter()
+        .flat_map(|tf| &tf.tweaks)
+        .map(|tweak| {
+            let is_default = tweak.operations.first()
+                .and_then(|op| {
+                    now(&op).ok().map(|v| v == op.value_enabled)
+                })
+                .unwrap_or(false);
+            (tweak.id.clone(), is_default)
+        })
+        .collect()
 }
 
 pub fn write(op: &Operation, value: &RegValue) -> Result<(), RegveilError> {
